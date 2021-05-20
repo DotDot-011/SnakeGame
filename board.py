@@ -18,8 +18,12 @@ class Board:
         if(new_stair.stop > self.finish_line):
             return False
         
-        stairs = list(filter(lambda stair: (stair.start == new_stair.start) or (stair.stop == new_stair.start) or (stair.start == new_stair.stop), self.stairs))
-        snakes = list(filter(lambda snake: (snake.head == new_stair.start) or (snake.tail == new_stair.start) or (snake.head == new_stair.stop), self.snakes))
+        stairs = list(filter(lambda stair: (stair.start == new_stair.start) 
+        or (stair.stop == new_stair.start) 
+        or (stair.start == new_stair.stop), self.stairs))
+        snakes = list(filter(lambda snake: (snake.head == new_stair.start) 
+        or (snake.tail == new_stair.start) 
+        or (snake.head == new_stair.stop), self.snakes))
 
         if(stairs or snakes):
             return False
@@ -33,8 +37,12 @@ class Board:
         if(new_snake.head > self.finish_line):
             return False
 
-        stairs = list(filter(lambda stair: (stair.start == new_snake.head) or (stair.stop == new_snake.head) or (stair.start == new_snake.tail), self.stairs))
-        snakes = list(filter(lambda snake: (snake.head == new_snake.head) or (snake.tail == new_snake.head) or (snake.head == new_snake.tail), self.snakes))
+        stairs = list(filter(lambda stair: (stair.start == new_snake.head) 
+        or (stair.stop == new_snake.head) 
+        or (stair.start == new_snake.tail), self.stairs))
+        snakes = list(filter(lambda snake: (snake.head == new_snake.head) 
+        or (snake.tail == new_snake.head) 
+        or (snake.head == new_snake.tail), self.snakes))
 
         if(stairs or snakes):
             return False
@@ -99,7 +107,7 @@ class Board:
 
             elif(snake):
                 self.player.move_to(snake.tail)
-                
+
                 print(f"take snake from {snake.head} to {snake.tail}")
 
             if(self.is_win(self.player)):
