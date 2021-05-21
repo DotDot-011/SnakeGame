@@ -51,3 +51,10 @@ class Game:
                 return "You win!"
         
         return f"You are on the number {self.player.position}"
+
+    # For check snake and ladder
+    def show_snake(self) -> None:
+        self.board.show_snake()
+
+    def show_ladder(self) -> None:
+        self.board.show_ladder()

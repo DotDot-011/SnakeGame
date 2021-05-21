@@ -6,12 +6,21 @@ from error import *
 class Board:
     
     def __init__(self, finish_line: int) -> None:
-        self.finish_line = finish_line
+        self.create_finish_line(finish_line)
         self.snakes = []
         self.ladders = []
 
+    def create_finish_line(self, finish_line: int) -> None:
+        if(finish_line < 2):
+            raise CannotCreateFinishLine("This finish line can not be created.")
+        
+        self.finish_line = finish_line
+
     def can_add_ladder(self, new_ladder: Ladder) -> bool:
         if(new_ladder.start > new_ladder.finish):
+            return False
+
+        if(new_ladder.start < 0):
             return False
 
         if(new_ladder.finish > self.finish_line):
@@ -31,6 +40,9 @@ class Board:
 
     def can_add_snake(self, new_snake: Snake) -> bool:
         if(new_snake.head < new_snake.tail):
+            return False
+
+        if(new_snake.tail < 0):
             return False
         
         if(new_snake.head >= self.finish_line):

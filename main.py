@@ -13,9 +13,13 @@ for line in lines:
     if(command == "create_game"):
         finish_line = int(parameters[0])
 
-        game = Game(finish_line)
+        try:
+            game = Game(finish_line)
 
-        print(f"Created game with finish line {finish_line}")
+            print(f"Created game with finish line {finish_line}")
+        
+        except Error as Er:
+            print(Er.message)
 
     elif(command == "add_ladder"):
         start = int(parameters[0])
