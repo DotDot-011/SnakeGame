@@ -1,5 +1,5 @@
 create_game 100
-add_ladder 15 50
+add_ladder 50 15
 add_snake 51 24
 add_ladder 64 85
 add_snake 87 75

@@ -28,7 +28,7 @@ for line in lines:
         try:
             game.add_ladder(start, finish)
 
-            print(f"Added ladder with start: {start}, stop: {finish}")
+            print(f"Added ladder with start: {start}, finish: {finish}")
 
         except Error as Er:
             print(Er.message)

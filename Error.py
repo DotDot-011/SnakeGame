@@ -16,3 +16,13 @@ class CannotAddSnake(Error):
 
     def __init__(self, message: str) -> None:
         self.message = message
+
+class CannotCreateLadder(Error):
+
+    def __init__(self, message: str) -> None:
+        self.message = message
+
+class CannotCreateSnake(Error):
+
+    def __init__(self, message: str) -> None:
+        self.message = message
