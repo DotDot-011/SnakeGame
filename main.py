@@ -1,5 +1,5 @@
-from board import Board
-from Error import *
+from game import Game
+from error import *
 
 file = open("input.txt", 'r')
 lines = file.readlines()
@@ -13,18 +13,18 @@ for line in lines:
     if(command == "create_game"):
         finish_line = int(parameters[0])
 
-        game = Board(finish_line)
+        game = Game(finish_line)
 
-        print(f"Create game with finish line {finish_line}")
+        print(f"Created game with finish line {finish_line}")
 
-    elif(command == "add_stair"):
+    elif(command == "add_ladder"):
         start = int(parameters[0])
-        stop = int(parameters[1])
+        finish = int(parameters[1])
 
         try:
-            game.add_stair(start, stop)
+            game.add_ladder(start, finish)
 
-            print(f"Add stair with start: {start}, stop: {stop}")
+            print(f"Added ladder with start: {start}, stop: {finish}")
 
         except Error as Er:
             print(Er.message)
@@ -36,20 +36,21 @@ for line in lines:
         try:
             game.add_snake(head, tail)
 
-            print(f"Add snake with head: {head}, tail: {tail}")
+            print(f"Added snake with head: {head}, tail: {tail}")
 
         except Error as Er:
             print(Er.message)
 
-    elif(command == "show_stair"):
-        game.show_stair()
-
-    elif(command == "show_snake"):
-        game.show_snake()
-
-    if(command == "play"):
+    elif(command == "play"):
         steps = list(map(lambda parameter: int(parameter), parameters))
 
         status = game.play(steps)
         
-        print(f"Now you are {status}")
+        print(status)
+
+    # For check snake and ladder
+    elif(command == "show_ladder"):
+        game.show_ladder()
+
+    elif(command == "show_snake"):
+        game.show_snake()
