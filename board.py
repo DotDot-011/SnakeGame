@@ -19,25 +19,37 @@ class Board:
         
         return True
 
-    def can_add_ladder(self, new_ladder: Ladder) -> bool:
-        chained_ladders = list(filter(lambda ladder: (ladder.start == new_ladder.start) 
+    def list_chained_ladder_with_ladder(self, new_ladder: Ladder) -> list[Ladder]:
+        return list(filter(lambda ladder: (ladder.start == new_ladder.start) 
         or (ladder.finish == new_ladder.start) 
         or (ladder.start == new_ladder.finish), self.ladders))
-        chained_snakes = list(filter(lambda snake: (snake.head == new_ladder.start) 
+
+    def list_chained_snake_with_ladder(self, new_ladder: Ladder) -> list[Snake]:
+        return list(filter(lambda snake: (snake.head == new_ladder.start) 
         or (snake.tail == new_ladder.start) 
         or (snake.head == new_ladder.finish), self.snakes))
 
-        return (not chained_ladders) and (not chained_snakes)
-
-    def can_add_snake(self, new_snake: Snake) -> bool:
-        chained_ladders = list(filter(lambda ladder: (ladder.start == new_snake.head) 
+    def list_chained_ladder_with_snake(self, new_snake: Snake) -> list[Ladder]:
+        return list(filter(lambda ladder: (ladder.start == new_snake.head) 
         or (ladder.finish == new_snake.head) 
         or (ladder.start == new_snake.tail), self.ladders))
-        chained_snakes = list(filter(lambda snake: (snake.head == new_snake.head) 
+
+    def list_chained_snake_with_snake(self, new_snake: Snake) -> list[Snake]:
+        return list(filter(lambda snake: (snake.head == new_snake.head) 
         or (snake.tail == new_snake.head) 
         or (snake.head == new_snake.tail), self.snakes))
 
-        return (not chained_ladders) and (not chained_snakes)
+    def can_add_ladder(self, new_ladder: Ladder) -> bool:
+        ladders = self.list_chained_ladder_with_ladder(new_ladder)
+        snakes = self.list_chained_snake_with_ladder(new_ladder)
+
+        return (not ladders) and (not snakes)
+
+    def can_add_snake(self, new_snake: Snake) -> bool:
+        ladders = self.list_chained_ladder_with_snake(new_snake)
+        snakes = self.list_chained_snake_with_snake(new_snake)
+
+        return (not ladders) and (not snakes)
 
     def add_ladder(self, start: int, finish: int) -> None:
         ladder = Ladder(start, finish, self.finish_line)
