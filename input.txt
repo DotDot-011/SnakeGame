@@ -1,3 +1,4 @@
+# TODO: handle case for add ladder and snake more than one per time
 create_game 100
 add_ladder 50 15
 add_snake 51 24

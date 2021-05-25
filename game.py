@@ -4,6 +4,7 @@ from player import Player
 class Game:
 
     def __init__(self, finish_line: int) -> None:
+        # TODO: board ต้องสามารถรับ list ของ ladder และ snake เริ่มต้น เพื่อสร้าง board ที่พร้อมเล่นได้หลังสร้างเสร็จ
         self.board = Board(finish_line)
 
     def add_ladder(self, start: int, finish: int) -> None:
@@ -52,6 +53,7 @@ class Game:
         
         return f"You are on the number {self.player.position}"
 
+    # TODO: change comment -> For testing and checking snake and ladder
     # For check snake and ladder
     def show_snake(self) -> None:
         self.board.show_snake()

@@ -9,11 +9,13 @@ class Board:
         if(not self.can_create(finish_line)):
             raise CannotCreateFinishLine("This finish line can not be created.")
 
+        # TODO: add parameter for take size value
         self.finish_line = finish_line
         self.snakes = []
         self.ladders = []
 
     def can_create(self, finish_line: int) -> bool:
+        # TODO: raise error for each condition of created failure
         if(finish_line < 2):
             return False
         
@@ -42,12 +44,14 @@ class Board:
     def can_add_ladder(self, new_ladder: Ladder) -> bool:
         ladders = self.list_chained_ladder_with_ladder(new_ladder)
         snakes = self.list_chained_snake_with_ladder(new_ladder)
+        # TODO: add condition to raise error why ladder can't be added
 
         return (not ladders) and (not snakes)
 
     def can_add_snake(self, new_snake: Snake) -> bool:
         ladders = self.list_chained_ladder_with_snake(new_snake)
         snakes = self.list_chained_snake_with_snake(new_snake)
+        # TODO: add condition to raise error why snake can't be added
 
         return (not ladders) and (not snakes)
 
@@ -67,6 +71,7 @@ class Board:
 
         self.snakes.append(snake)
 
+    # TODO: change function name to define that ladder search with start ladder
     def get_ladder_on_position(self, position: int) -> Optional[Ladder]:
         ladders = list(filter(lambda ladder: ladder.start == position, self.ladders))
 
@@ -75,6 +80,7 @@ class Board:
 
         return ladders[0]
 
+    # TODO: change function name to define that snake search with head snake
     def get_snake_on_position(self, position: int) -> Optional[Snake]:
         snakes = list(filter(lambda snake: snake.head == position, self.snakes))
 
@@ -83,6 +89,7 @@ class Board:
 
         return snakes[0]
 
+    # TODO: change comment -> For testing and checking snake and ladder
     # For check snake and ladder
     def show_snake(self) -> None:
         print("List of snake:")
