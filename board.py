@@ -5,74 +5,128 @@ from error import *
 
 class Board:
     
-    def __init__(self, finish_line: int) -> None:
-        if(not self.can_create(finish_line)):
-            raise CannotCreateFinishLine("This finish line can not be created.")
+    def __init__(self,
+                 board_size: int, 
+                 finish_line: int, 
+                 ladder_coordinates: list[tuple(int, int)], 
+                 snake_coordinates: list[tuple(int, int)], 
+                 start_line = 1) -> None:
+        self.check_create_condition(board_size, finish_line, ladder_coordinates, snake_coordinates, start_line)
 
-        # TODO: add parameter for take size value
+        self.size = board_size
         self.finish_line = finish_line
-        self.snakes = []
+        self.start_line = start_line
+        # **************
         self.ladders = []
+        self.add_ladders(ladder_coordinates, board_size)
 
-    def can_create(self, finish_line: int) -> bool:
-        # TODO: raise error for each condition of created failure
-        if(finish_line < 2):
-            return False
-        
-        return True
+        self.snakes = []
+        self.
+        self.add_snakes(snake_coordinates, board_size)
 
-    def list_chained_ladder_with_ladder(self, new_ladder: Ladder) -> list[Ladder]:
-        return list(filter(lambda ladder: (ladder.start == new_ladder.start) 
-        or (ladder.finish == new_ladder.start) 
-        or (ladder.start == new_ladder.finish), self.ladders))
+    def check_create_condition(self, board_size: int, finish_line: int, start_line: int) -> None:
+        if(board_size < 0):
+            raise BoardSizeNegativeError(board_size)
 
-    def list_chained_snake_with_ladder(self, new_ladder: Ladder) -> list[Snake]:
-        return list(filter(lambda snake: (snake.head == new_ladder.start) 
-        or (snake.tail == new_ladder.start) 
-        or (snake.head == new_ladder.finish), self.snakes))
+        if(board_size == start_line):
+            raise BoardSizeEqualStartError(board_size)
 
-    def list_chained_ladder_with_snake(self, new_snake: Snake) -> list[Ladder]:
-        return list(filter(lambda ladder: (ladder.start == new_snake.head) 
-        or (ladder.finish == new_snake.head) 
-        or (ladder.start == new_snake.tail), self.ladders))
+        if(finish_line > board_size):
+            raise FinishLineMoreThanBoardSizeError(finish_line, board_size)
 
-    def list_chained_snake_with_snake(self, new_snake: Snake) -> list[Snake]:
-        return list(filter(lambda snake: (snake.head == new_snake.head) 
-        or (snake.tail == new_snake.head) 
-        or (snake.head == new_snake.tail), self.snakes))
+        if(finish_line < 0):
+            raise FinishLineNegativeError(finish_line)
 
-    def can_add_ladder(self, new_ladder: Ladder) -> bool:
-        ladders = self.list_chained_ladder_with_ladder(new_ladder)
-        snakes = self.list_chained_snake_with_ladder(new_ladder)
-        # TODO: add condition to raise error why ladder can't be added
+        if(finish_line == start_line):
+            raise FinishLineEqualStartError(finish_line)
 
-        return (not ladders) and (not snakes)
+    def setup_ladders(self, ladder_coordinates: list[tuple(int, int)]) -> None:
+        ladders = self.create_ladders(ladder_coordinates)
+        self.add_ladders(ladders)
 
-    def can_add_snake(self, new_snake: Snake) -> bool:
-        ladders = self.list_chained_ladder_with_snake(new_snake)
-        snakes = self.list_chained_snake_with_snake(new_snake)
-        # TODO: add condition to raise error why snake can't be added
+    def setup_snakes(self, snake_coordinates: list[tuple(int, int)]) -> None:
+        snakes = self.create_snakes(snake_coordinates)
+        self.add_snakes(snakes)
 
-        return (not ladders) and (not snakes)
+    # TODO: change argument type
+    def add_ladders(self, ladders: list[Ladder]) -> None:
+        for ladder in ladders:
+            self.add_ladder(ladder)
 
-    def add_ladder(self, start: int, finish: int) -> None:
-        ladder = Ladder(start, finish, self.finish_line)
-        
-        if(not self.can_add_ladder(ladder)):
-            raise CannotAddLadder(f"Ladder with start: {ladder.start}, finish: {ladder.finish} cannot be added.")
+    # TODO: change argument type
+    def add_snakes(self, snakes: list[Snake]) -> None:
+        for snake in snakes:
+            self.add_snake(snake)
+
+    def create_ladders(self, ladder_coordinates: list[tuple(int, int)]) -> list[Ladder]:
+        return list(map(lambda ladder_coordinate: Ladder(ladder_coordinate[0], ladder_coordinate[1], self.size), ladder_coordinates))
+
+    def create_snakes(self, snake_coordinates: list[tuple(int, int)]) -> list[Ladder]:
+        return list(map(lambda snake_coordinate: Snake(snake_coordinate[0], snake_coordinate[1], self.size), snake_coordinates))
+
+    def check_chaining_ladder_with_ladder(self, new_ladder: Ladder) -> None:
+        for ladder in self.ladders:
+            if(ladder.start == new_ladder.start):
+                raise NewStartLadderEqualStartLadderError(ladder, new_ladder)
+            
+            if(ladder.finish == new_ladder.start):
+                raise NewStartLadderChainFinishLadderError(ladder, new_ladder)
+
+            if(ladder.start == new_ladder.finish):
+                raise NewFinishLadderChainStartLadderError(ladder, new_ladder)
+
+    def check_chaining_snake_with_ladder(self, new_ladder: Ladder) -> None:
+        for snake in self.snakes:
+            if(snake.head == new_ladder.start):
+                raise NewStartLadderEqualHeadSnakeError(snake, new_ladder)
+
+            if(snake.tail == new_ladder.start):
+                raise NewStartLadderChainTailSnakeError(snake, new_ladder)
+
+            if(snake.head == new_ladder.finish):
+                raise NewFinishLadderChainHeadSnakeError(snake, new_ladder)
+
+    def check_chaining_ladder_with_snake(self, new_snake: Snake) -> list[Ladder]:
+        for ladder in self.ladders:
+            if(ladder.start == new_snake.head):
+                raise NewHeadSnakeEqualStartLadderError(ladder, new_snake)
+
+            if(ladder.finish == new_snake.head):
+                raise NewHeadSnakeChainFinishLadderError(ladder, new_snake)
+
+            if(ladder.start == new_snake.tail):
+                raise NewTailSnakeChainStartLadderError(ladder, new_snake)
+
+    def check_chaining_snake_with_snake(self, new_snake: Snake) -> list[Snake]:
+        for snake in self.snakes:
+            if(snake.head == new_snake.head):
+                raise NewHeadSnakeEqualHeadSnakeError(snake, new_snake)
+
+            if(snake.tail == new_snake.head):
+                raise NewHeadSnakeChainTailSnakeError(snake, new_snake)
+
+            if(snake.head == new_snake.tail):
+                raise NewTailSnakeChainHeadSnakeError(snake, new_snake)
+
+    def check_add_ladder_condition(self, new_ladder: Ladder) -> None:
+        self.check_chaining_ladder_with_ladder(new_ladder)
+        self.check_chaining_snake_with_ladder(new_ladder)
+
+    def check_add_snake_condition(self, new_snake: Snake) -> None:
+        self.check_chaining_ladder_with_snake(new_snake)
+        self.check_chaining_snake_with_snake(new_snake)
+
+    def add_ladder(self, ladder: Ladder) -> None:
+        self.check_add_ladder_condition(ladder)
 
         self.ladders.append(ladder)
 
-    def add_snake(self, head: int, tail: int) -> None:
-        snake = Snake(head, tail, self.finish_line)
-
-        if(not self.can_add_snake(snake)):
-            raise CannotAddSnake(f"Snake with head: {snake.head}, tail: {snake.tail} cannot be added.")
+    def add_snake(self, snake: Snake) -> None:
+        self.check_add_snake_condition(snake)
 
         self.snakes.append(snake)
 
-    # TODO: change function name to define that ladder search with start ladder
-    def get_ladder_on_position(self, position: int) -> Optional[Ladder]:
+    def get_ladder_on_position_by_start_ladder(self, position: int) -> Optional[Ladder]:
         ladders = list(filter(lambda ladder: ladder.start == position, self.ladders))
 
         if(not ladders):
@@ -80,8 +134,7 @@ class Board:
 
         return ladders[0]
 
-    # TODO: change function name to define that snake search with head snake
-    def get_snake_on_position(self, position: int) -> Optional[Snake]:
+    def get_snake_on_position_by_head_snake(self, position: int) -> Optional[Snake]:
         snakes = list(filter(lambda snake: snake.head == position, self.snakes))
 
         if(not snakes):
@@ -89,8 +142,7 @@ class Board:
 
         return snakes[0]
 
-    # TODO: change comment -> For testing and checking snake and ladder
-    # For check snake and ladder
+    # For testing and checking snake and ladder
     def show_snake(self) -> None:
         print("List of snake:")
 

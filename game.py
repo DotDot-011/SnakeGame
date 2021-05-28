@@ -1,17 +1,14 @@
+from _typeshed import NoneType
+from sys import platform
 from board import Board
 from player import Player
+from random import randint
 
 class Game:
 
-    def __init__(self, finish_line: int) -> None:
-        # TODO: board ต้องสามารถรับ list ของ ladder และ snake เริ่มต้น เพื่อสร้าง board ที่พร้อมเล่นได้หลังสร้างเสร็จ
-        self.board = Board(finish_line)
-
-    def add_ladder(self, start: int, finish: int) -> None:
-        self.board.add_ladder(start, finish)
-
-    def add_snake(self, head: int, tail: int) -> None:
-        self.board.add_snake(head, tail)
+    def __init__(self, board: Board, player: Player) -> None:
+        self.board = board
+        self.player = player
 
     def move_player(self, step: int) -> None:
         self.player.position += step
@@ -19,24 +16,30 @@ class Game:
     def move_player_to(self, position: int) -> None:
         self.player.position = position
 
+    def toss_dice(self) -> int:
+        return randint(1, 6)
+
     def is_over(self) -> bool:
-        if(self.player.position < self.board.finish_line):
-            return False
-        
-        return True
+        return self.player.position >= self.board.finish_line
     
-    def play(self, steps: list[int]) -> str:
-        self.player = Player(position = 1)
+    def play(self, steps: list[int]) -> None:
+        self.player.position = self.board.start_line
 
         print("Game start")
 
-        for step in steps:
+        while True:
+            command = input("Continue(Y/N)?: ")
+            
+            if(command == "N"):
+                return
+
+            step = self.toss_dice()
             self.move_player(step)
 
             print(f"Go to {self.player.position}")
 
-            ladder = self.board.get_ladder_on_position(self.player.position)
-            snake = self.board.get_snake_on_position(self.player.position)
+            ladder = self.board.get_ladder_on_position_by_start_ladder(self.player.position)
+            snake = self.board.get_snake_on_position_by_head_snake(self.player.position)
 
             if(ladder):
                 self.move_player_to(ladder.finish)
@@ -49,12 +52,11 @@ class Game:
                 print(f"Take snake to {self.player.position}")
 
             if(self.is_over()):
-                return "You win!"
-        
-        return f"You are on the number {self.player.position}"
+                print("You win!")
+                
+                return
 
-    # TODO: change comment -> For testing and checking snake and ladder
-    # For check snake and ladder
+    # For testing and checking snake and ladder
     def show_snake(self) -> None:
         self.board.show_snake()
 

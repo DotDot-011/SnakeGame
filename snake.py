@@ -1,24 +1,19 @@
-from error import CannotCreateSnake
+from error import *
 
 class Snake:
 
-    # TODO: change name finish_line -> board_size
-    def __init__(self, head: int, tail: int, finish_line: int) -> None:
-        if(self.can_create(head, tail, finish_line)):
-            raise(CannotCreateSnake(f"Can not create snake with head: {head}, tail: {tail}"))
-  
+    def __init__(self, head: int, tail: int, board_size: int) -> None:
+        self.check_create_condition(head, tail, board_size)
+
         self.head = head
         self.tail = tail
 
-    def can_create(self, head: int, tail: int, finish_line: int) -> bool:
-        # TODO: raise error for each condition of created failure
+    def check_create_condition(self, head: int, tail: int, board_size: int) -> bool:
         if(head <= tail):
-            return False
+            raise HeadSnakeLessThanTailError(head, tail)
 
         if(tail < 1):
-            return False
+            raise TailSnakeLessThanOneError(head, tail)
 
-        if(head >= finish_line):
-            return False
-
-        return True
+        if(head >= board_size):
+            raise HeadSnakeMoreThanBoardSizeError(head, tail)

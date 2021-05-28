@@ -1,24 +1,19 @@
-from error import CannotCreateLadder
+from error import *
 
 class Ladder:
 
-    # TODO: change name finish_line -> board_size
-    def __init__(self, start: int, finish: int, finish_line: int) -> None:
-        if(not self.can_create(start, finish)):
-            raise CannotCreateLadder(f"Can not create ladder with start: {start}, finish: {finish}")
+    def __init__(self, start: int, finish: int, board_size: int) -> None:
+        self.check_create_condition(start, finish, board_size)
         
         self.start = start
         self.finish = finish
 
-    def can_create(self, start: int, finish: int, finish_line: int) -> bool:
-        # TODO: raise error for each condition of created failure
+    def check_create_condition(self, start: int, finish: int, board_size: int) -> bool:
         if(start >= finish):
-            return False
+            raise StartLadderMoreThanFinishError(start, finish)
 
-        if(start < 2):
-            return False
+        if(start < 1):
+            raise StartLadderLessThanOneError(start, finish)
 
-        if(finish > finish_line):
-            return False
-
-        return True
+        if(finish > board_size):
+            raise FinishLadderMoreThanBoardSizeError(start, finish)
