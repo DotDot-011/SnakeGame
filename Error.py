@@ -2,22 +2,6 @@ class Error(Exception):
 
     pass
 
-class BoardSizeError(Error):
-
-    def __init__(self, board_size: int) -> None:
-        self.message = self.create_message(board_size)
-
-    def create_message(self, board_size: int) -> str:
-        return f"Board size {board_size} can't be created"
-
-class FinishLineError(Error):
-
-    def __init__(self, finish_line: int) -> None:
-        self.message = self.create_message(finish_line)
-
-    def create_message(self, finish_line: int) -> str:
-        return f"Finish line {finish_line} can't be created"
-
 class StartLadderMoreThanFinishError(Error):
 
     def __init__(self, start: int, finish: int) -> None:
@@ -37,7 +21,7 @@ class StartLadderLessThanOneError(Error):
 class FinishLadderMoreThanBoardSizeError(Error):
 
     def __init__(self, start: int, finish: int) -> None:
-        self.message = self.create_message(finish)
+        self.message = self.create_message(start, finish)
 
     def create_message(self, start: int, finish: int) -> str:
         return f"Ladder start: {start}, finish: {finish}, finish {finish} is more than board size"
@@ -45,7 +29,7 @@ class FinishLadderMoreThanBoardSizeError(Error):
 class HeadSnakeLessThanTailError(Error):
 
     def __init__(self, head: int, tail: int) -> None:
-        self.message = self.create_message()
+        self.message = self.create_message(head, tail)
 
     def create_message(self, head: int, tail: int) -> str:
         return f"Snake head: {head}, tail: {tail}, head of this snake less than tail"
@@ -66,13 +50,13 @@ class HeadSnakeMoreThanBoardSizeError(Error):
     def create_message(self, head: int, tail: int) -> str:
         return f"Snake head: {head}, tail: {tail}, head {head} is more than board size"
 
-class BoardSizeNegativeError(Error):
+class BoardSizeLessThanOneError(Error):
 
     def __init__(self, board_size: int) -> None:
         self.message = self.create_message(board_size)
 
     def create_message(self, board_size: int) -> str:
-        return f"Board size {board_size} is negative"
+        return f"Board size {board_size} is less than one"
 
 class BoardSizeEqualStartError(Error):
 
@@ -90,13 +74,13 @@ class FinishLineMoreThanBoardSizeError(Error):
     def create_message(self, board_size: int, finish_line: int) -> str:
         return f"Finish line {finish_line} is more than Board size {board_size}"
 
-class FinishLineNegativeError(Error):
+class FinishLineLessThanOneError(Error):
 
     def __init__(self, finish_line: int) -> None:
         self.message = self.create_message(finish_line)
 
     def create_message(self, finish_line: int) -> str:
-        return f"Finish line {finish_line} is negative"
+        return f"Finish line {finish_line} is less than 1"
 
 class FinishLineEqualStartError(Error):
     

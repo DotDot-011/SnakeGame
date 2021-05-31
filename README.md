@@ -1,4 +1,4 @@
-# SnakeGame
+# SnakeAndLadderGame
 
 Kid board game with simple rules
 1. if you are on finish_line you win
@@ -7,6 +7,4 @@ Kid board game with simple rules
 
 command
 1. create_game -> create_game with finish_line
-2. add_snake -> add_snake with head and tail
-3. add_ladder -> add_ladder with start and finish
-4. play -> play with sequence of step you want to go
+4. play -> play game
