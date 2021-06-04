@@ -1,11 +1,9 @@
 from board import Board
 from game import Game
+from dice import Dice
 from player import Player
 from error import *
 
-file = open("input.txt", 'r')
-lines = file.readlines()
-file.close()
 
 def create_coordinate_from_str(string: str) -> tuple[int, int]:
     parameters = string.split("\n")[0].split()
@@ -14,12 +12,14 @@ def create_coordinate_from_str(string: str) -> tuple[int, int]:
     
     return (start, finish)
 
+
 def list_ladder_coordinate() -> list[tuple[int, int]]:
     file = open("ladderconfig.txt", 'r')
     lines = file.readlines()
     file.close()
 
     return list(map(lambda line: create_coordinate_from_str(line), lines))
+
 
 def list_snake_coordinate() -> list[tuple[int, int]]:
     file = open("snakeconfig.txt", 'r')
@@ -28,34 +28,23 @@ def list_snake_coordinate() -> list[tuple[int, int]]:
 
     return list(map(lambda line: create_coordinate_from_str(line), lines))
 
-for line in lines:
-    words = line.split("\n")[0].split()
-    command = words[0]
-    parameters = words[1:]
+def main():
+    board_size = 100
+    finish_line = 100
+    start_line = 1
+    ladder_coordinates = list_ladder_coordinate()
+    snake_coordinates = list_snake_coordinate()
+    
+    try:
+        board = Board(board_size, finish_line, ladder_coordinates, snake_coordinates, start_line)
+        dice = Dice(6)
+        game = Game(board, [Player(player_name = "Dog", position = start_line)])
 
-    if(command == "create_game"):
-        board_size = int(parameters[0])
-        finish_line = int(parameters[1])
-        start_line = int(parameters[2])
-        ladder_coordinates = list_ladder_coordinate()
-        snake_coordinates = list_snake_coordinate()
-        
-        try:
-            board = Board(board_size, finish_line, ladder_coordinates, snake_coordinates, start_line)
-            player = Player(position = start_line)
-            game = Game(board, player)
-
-            print(f"Created game board_size {board_size}")
-        
-        except Error as Er:
-            print(Er.message)
-
-    elif(command == "play"):
+        print(f"Created game success")
         game.play()
+    
+    except Error as Er:
+        print(Er.message)
 
-    # For testing and checking snake and ladder
-    elif(command == "show_ladder"):
-        game.show_ladder()
+main()
 
-    elif(command == "show_snake"):
-        game.show_snake()

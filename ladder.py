@@ -1,5 +1,6 @@
 from error import *
 
+
 class Ladder:
 
     def __init__(self, start: int, finish: int, board_size: int) -> None:
@@ -17,3 +18,4 @@ class Ladder:
 
         if(finish > board_size):
             raise FinishLadderMoreThanBoardSizeError(start, finish)
+

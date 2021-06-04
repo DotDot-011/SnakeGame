@@ -1,5 +1,6 @@
 from error import *
 
+
 class Snake:
 
     def __init__(self, head: int, tail: int, board_size: int) -> None:
@@ -17,3 +18,4 @@ class Snake:
 
         if(head >= board_size):
             raise HeadSnakeMoreThanBoardSizeError(head, tail)
+
