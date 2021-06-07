@@ -20,21 +20,27 @@ class Board:
         self.ladders = self.__setup_ladders(ladder_coordinates)
         self.snakes = self.__setup_snakes(snake_coordinates)
 
-    def check_create_condition(self, board_size: int, finish_line: int, start_line: int) -> None:
-        if(board_size < 1):
+    def check_board_size_more_than_zero(self, board_size: int) -> None:
+        if(not(board_size > 0)):
             raise BoardSizeLessThanOneError(board_size)
 
-        if(board_size == start_line):
-            raise BoardSizeEqualStartError(board_size)
-
-        if(finish_line > board_size):
+    def check_finish_line_less_than_or_equal_board_size(self, finish_line: int, board_size: int) -> None:
+        if(not(finish_line <= board_size)):
             raise FinishLineMoreThanBoardSizeError(finish_line, board_size)
 
-        if(finish_line < 1):
+    def check_finish_line_more_than_zero(self, finish_line: int) -> None:
+        if(not(finish_line > 0)):
             raise FinishLineLessThanOneError(finish_line)
 
-        if(finish_line == start_line):
+    def check_finish_line_not_start_line(self, finish_line: int, start_line: int) -> None:
+        if(not(finish_line != start_line)):
             raise FinishLineEqualStartError(finish_line)
+
+    def check_create_condition(self, board_size: int, finish_line: int, start_line: int) -> None:
+        self.check_board_size_more_than_zero(board_size)
+        self.check_finish_line_less_than_or_equal_board_size(finish_line)
+        self.check_finish_line_more_than_zero(finish_line, board_size)
+        self.check_finish_line_not_start_line(finish_line, start_line)
 
     def __setup_ladders(self, ladder_coordinates: list[tuple[int, int]]) -> list[Ladder]:
         ladders = []
@@ -46,7 +52,7 @@ class Board:
                 self.check_chaining_ladder_with_ladder(ladder, ladders)
 
                 ladders.append(ladder)
-                    
+
             except Error as Er:
                 print(Er.message)
                 
@@ -69,50 +75,77 @@ class Board:
                 
         return snakes
 
-    # TODO: merge error with same argument
+    def check_start_ladder_chain_start_ladder(self, first_ladder: Ladder, second_ladder: Ladder) -> None:
+        if(first_ladder.start == second_ladder.start):
+            raise NewStartLadderEqualStartLadderError(first_ladder.start, first_ladder.finish, second_ladder.start)
+
+    def check_finish_ladder_chain_start_ladder(self, first_ladder: Ladder, second_ladder: Ladder) -> None:
+        if(first_ladder.finish == second_ladder.start):
+            raise NewStartLadderChainFinishLadderError(first_ladder.start, first_ladder.finish, second_ladder.start)
+
+    def check_start_ladder_chain_finish_ladder(self, first_ladder: Ladder, second_ladder: Ladder) -> None:
+        if(first_ladder.start == second_ladder.finish):
+            raise NewFinishLadderChainStartLadderError(first_ladder.start, first_ladder.finish, second_ladder.start)
+
+    def check_head_snake_chain_start_ladder(self, snake: Snake, ladder: Ladder) -> None:
+        if(snake.head == ladder.start):
+            raise NewStartLadderEqualHeadSnakeError(snake.head, snake.tail, ladder.start)
+        
+    def check_tail_snake_chain_start_ladder(self, snake: Snake, ladder: Ladder) -> None:
+        if(snake.tail == ladder.start):
+            raise NewStartLadderChainTailSnakeError(snake.head, snake.tail, ladder.start)
+
+    def check_head_snake_chain_finish_ladder(self, snake: Snake, ladder: Ladder) -> None:
+        if(snake.head == ladder.finish):
+            raise NewFinishLadderChainHeadSnakeError(snake.head, snake.tail, ladder.finish)
+
+    def check_start_ladder_chain_head_snake(self, ladder: Ladder, snake: Snake) -> None:
+        if(ladder.start == snake.head):
+            raise NewHeadSnakeEqualStartLadderError(ladder.start, ladder.finish, snake.head)
+
+    def check_finish_ladder_chain_head_snake(self, ladder: Ladder, snake: Snake) -> None:
+        if(ladder.finish == snake.head):
+            raise NewHeadSnakeChainFinishLadderError(ladder.start, ladder.finish, snake.head)
+
+    def check_start_ladder_chain_tail_snake(self, ladder: Ladder, snake: Snake) -> None:
+        if(ladder.start == snake.tail):
+            raise NewTailSnakeChainStartLadderError(ladder.start, ladder.finish, snake.tail)
+
+    def check_head_snake_chain_head_snake(self, first_snake: Snake, second_snake: Snake) -> None:
+        if(first_snake.head == second_snake.head):
+            raise NewHeadSnakeEqualHeadSnakeError(first_snake.head, first_snake.tail, second_snake.head)
+
+    def check_tail_snake_chain_head_snake(self, first_snake: Snake, second_snake: Snake) -> None:
+        if(first_snake.tail == second_snake.head):
+            raise NewHeadSnakeChainTailSnakeError(first_snake.head, first_snake.tail, second_snake.head)
+
+    def check_head_snake_chain_tail_snake(self, first_snake: Snake, second_snake: Snake) -> None:
+            if(first_snake.head == second_snake.tail):
+                raise NewTailSnakeChainHeadSnakeError(first_snake.head, first_snake.tail, second_snake.tail)
+
     def check_chaining_ladder_with_ladder(self, new_ladder: Ladder, ladders: list[Ladder] = []) -> None:
         for ladder in ladders:
-            if(ladder.start == new_ladder.start):
-                raise NewStartLadderEqualStartLadderError(ladder.start, ladder.finish, new_ladder.start)
-            
-            if(ladder.finish == new_ladder.start):
-                raise NewStartLadderChainFinishLadderError(ladder.start, ladder.finish, new_ladder.start)
-
-            if(ladder.start == new_ladder.finish):
-                raise NewFinishLadderChainStartLadderError(ladder.start, ladder.finish, new_ladder.finish)
+            self.check_start_ladder_chain_start_ladder(ladder, new_ladder)
+            self.check_finish_ladder_chain_start_ladder(ladder, new_ladder)
+            self.check_start_ladder_chain_finish_ladder(ladder, new_ladder)
 
     def check_chaining_snake_with_ladder(self, new_ladder: Ladder, snakes: list[Snake] = []) -> None:
         for snake in snakes:
-            if(snake.head == new_ladder.start):
-                raise NewStartLadderEqualHeadSnakeError(snake.head, snake.tail, new_ladder.start)
-
-            if(snake.tail == new_ladder.start):
-                raise NewStartLadderChainTailSnakeError(snake.head, snake.tail, new_ladder.start)
-
-            if(snake.head == new_ladder.finish):
-                raise NewFinishLadderChainHeadSnakeError(snake.head, snake.tail, new_ladder.finish)
+            self.check_head_snake_chain_start_ladder(snake, new_ladder)
+            self.check_tail_snake_chain_start_ladder(snake, new_ladder)
+            self.check_head_snake_chain_finish_ladder(snake, new_ladder)
 
     def check_chaining_ladder_with_snake(self, new_snake: Snake, ladders: list[Ladder] = []) -> list[Ladder]:
         for ladder in ladders:
-            if(ladder.start == new_snake.head):
-                raise NewHeadSnakeEqualStartLadderError(ladder.start, ladder.finish, new_snake.head)
-
-            if(ladder.finish == new_snake.head):
-                raise NewHeadSnakeChainFinishLadderError(ladder.start, ladder.finish, new_snake.head)
-
-            if(ladder.start == new_snake.tail):
-                raise NewTailSnakeChainStartLadderError(ladder.start, ladder.finish, new_snake.tail)
-
+            self.check_start_ladder_chain_head_snake(ladder, new_snake)
+            self.check_finish_ladder_chain_head_snake(ladder, new_snake)
+            self.check_start_ladder_chain_tail_snake(ladder, new_snake)
+          
     def check_chaining_snake_with_snake(self, new_snake: Snake, snakes: list[Snake] = []) -> list[Snake]:
         for snake in snakes:
-            if(snake.head == new_snake.head):
-                raise NewHeadSnakeEqualHeadSnakeError(snake.head, snake.finish, new_snake.head)
-
-            if(snake.tail == new_snake.head):
-                raise NewHeadSnakeChainTailSnakeError(snake.head, snake.finish, new_snake.head)
-
-            if(snake.head == new_snake.tail):
-                raise NewTailSnakeChainHeadSnakeError(snake.head, snake.tail, new_snake.tail)
+            self.check_head_snake_chain_head_snake(snake, new_snake)
+            self.check_tail_snake_chain_head_snake(snake, new_snake)
+            self.check_head_snake_chain_tail_snake(snake, new_snake)
 
     def get_ladder_by_start_on_position(self, position: int) -> Optional[Ladder]:
         ladders = list(filter(lambda ladder: ladder.start == position, self.ladders))

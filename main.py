@@ -36,15 +36,17 @@ def main():
     snake_coordinates = list_snake_coordinate()
     
     try:
-        board = Board(board_size, finish_line, ladder_coordinates, snake_coordinates, start_line)
+        board = Board(board_size, 
+                      finish_line, 
+                      ladder_coordinates, 
+                      snake_coordinates, 
+                      start_line)
         dice = Dice(6)
-        game = Game(board, [Player(player_name = "Dog", position = start_line)])
+        game = Game(board, dice, [Player(player_name = "Dog", position = start_line)])
 
-        print(f"Created game success")
         game.play()
     
     except Error as Er:
         print(Er.message)
 
 main()
-

@@ -1,3 +1,0 @@
-create_game 100 100 1
-show_snake
-play

@@ -1,7 +1,6 @@
 from board import Board
 from player import Player
 from dice import Dice
-from random import randint
 
 
 class Game:
@@ -17,10 +16,7 @@ class Game:
     def move_player_to(self, player: Player, position: int) -> None:
         player.position = position
 
-    def toss_dice(self) -> int:
-        return randint(1, 6)
-
-    def player_win(self, player: Player) -> bool:
+    def is_player_win(self, player: Player) -> bool:
         return player.position >= self.board.finish_line
 
     def is_continue(self) -> bool:
@@ -33,6 +29,25 @@ class Game:
             if(command == "Y" or command == "y"):
                 return True
     
+    def move_action(self, player: Player) -> None:
+        step = self.dice.toss()
+
+        self.move_player(player, step)
+        
+        ladder = self.board.get_ladder_by_start_on_position(player.position)
+
+        if(ladder):
+            self.move_player_to(player, ladder.finish)
+
+            print(f"{player.name} take ladder to {player.position}")
+
+        snake = self.board.get_snake_by_head_on_position(player.position)
+
+        if(snake):
+            self.move_player_to(player, snake.tail)
+
+            print(f"{player.name} take snake to {player.position}")
+
     def play(self) -> None:
         is_end = False
 
@@ -40,28 +55,11 @@ class Game:
 
         while not is_end:
             for player in self.players:
-                step = self.dice.toss()
+                self.move_action(player)
 
-                print(f"{player.name} toss dice and get {step}")
+                print(f"{player.name} {player.position}")
 
-                self.move_player(player, step)
-
-                print(f"{player.name} go to {player.position}")
-
-                ladder = self.board.get_ladder_by_start_on_position(player.position)
-                snake = self.board.get_snake_by_head_on_position(player.position)
-
-                if(ladder):
-                    self.move_player_to(player, ladder.finish)
-
-                    print(f"{player.name} take ladder to {player.position}")
-
-                elif(snake):
-                    self.move_player_to(snake.tail)
-
-                    print(f"{player.name} take snake to {player.position}")
-
-                if(self.player_win(player)):
+                if(self.is_player_win(player)):
                     print(f"{player.name} win!")
                     
                     is_end = True
